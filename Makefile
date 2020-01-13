@@ -1,4 +1,4 @@
-all: dna rna revc test
+all: dna rna revc fib test
 
 test:
 	python2.7 test.py
@@ -11,3 +11,6 @@ rna: rna.c utils.h utils.c
 	
 revc: revc.c utils.h utils.c
 	cc -o revc revc.c utils.c
+
+fib: fib.c utils.h utils.c
+	cc -o fib fib.c utils.c

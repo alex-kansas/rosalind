@@ -20,9 +20,7 @@ int main(int argc, char *argv[])
     char map[256];  /* maps complementary symbols to each other;                    */
                     /*  using only 4 of the elements, so trading memory for speed   */
     int sc_len;     /* length of the sc string                                      */
-    
-    compiler_assert(sizeof(char) == 1);
-    
+        
     /*
      * Read dataset
      */
