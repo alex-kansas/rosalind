@@ -1,16 +1,28 @@
-all: dna rna revc fib test
+DEPS = src/utils.h src/rosalind.h
+OBJS = bin/utils.o bin/rosalind.o
+
+all: bin/dna bin/rna bin/revc bin/fib bin/gc test
 
 test:
-	python2.7 test.py
+	python2.7 vnv/test.py
 
-dna: dna.c utils.h utils.c
-	cc -o dna dna.c utils.c
-	
-rna: rna.c utils.h utils.c
-	cc -o rna rna.c utils.c
-	
-revc: revc.c utils.h utils.c
-	cc -o revc revc.c utils.c
+bin/dna: src/dna.c $(OBJS) $(DEPS)
+	cc -o $@ src/dna.c $(OBJS)
 
-fib: fib.c utils.h utils.c
-	cc -o fib fib.c utils.c
+bin/rna: src/rna.c $(OBJS) $(DEPS)
+	cc -o $@ src/rna.c $(OBJS)
+
+bin/revc: src/revc.c $(OBJS) $(DEPS)
+	cc -o $@ src/revc.c $(OBJS)
+
+bin/fib: src/fib.c $(OBJS) $(DEPS)
+	cc -o $@ src/fib.c $(OBJS)
+
+bin/gc: src/gc.c $(OBJS) $(DEPS)
+	cc -o $@ src/gc.c $(OBJS)
+
+bin/utils.o: src/utils.c $(DEPS)
+	cc -c src/utils.c -o $@
+
+bin/rosalind.o: src/rosalind.c $(DEPS)
+	cc -c src/rosalind.c -o $@
