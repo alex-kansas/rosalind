@@ -26,16 +26,16 @@ static __inline int isnucleotide(char c)
  */
 static __inline q30_t q30_div(int32_t x, int32_t y)
 {
-    int64_t temp = (int64_t)x << 30;
-    if((x >= 0) == (y >= 0))
-    {
-        temp += y / 2;
-    }
-    else
-    {
-        temp -= y / 2;
-    }
-    return((q30_t)(temp / y));
+    return((q30_t)(((int64_t)x << 30) / y));
+}
+
+/*
+ * The following function multiplies two Q1.30 numbers
+ */
+static __inline q30_t q30_mul(q30_t x, q30_t y)
+{
+
+    return((q30_t)(((int64_t)x * y) >> 30));
 }
 
 /*
@@ -56,5 +56,16 @@ size_t utils_read_file(
         char *argv[],               /* command line arguments           */
         char *buf,                  /* output buffer                    */
         size_t buf_len);            /* buffer size                      */
+
+/*
+ * Utility to read integers from file.
+ * File is specified by the command arguments.
+ * Returns number of integers read.
+ */
+unsigned int utils_read_ints_from_file(
+        int argc,                   /* number of command line arguments */
+        char *argv[],               /* command line arguments           */
+        int * out,                  /* output buffer                    */
+        unsigned int maxcnt);       /* max number of ints to read       */
 
 #endif /* UTILS_H */

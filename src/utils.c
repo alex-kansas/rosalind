@@ -42,3 +42,51 @@ size_t utils_read_file(
 
     return(size_read);
 }
+
+
+/*
+ * Utility to read integers from file.
+ * File is specified by the command arguments.
+ * Returns number of integers read.
+ * Checks if the integers are positive.
+ */
+unsigned int utils_read_ints_from_file(
+        int argc,                   /* number of command line arguments */
+        char *argv[],               /* command line arguments           */
+        int * out,                  /* output buffer                    */
+        unsigned int maxcnt)        /* max number of ints to read       */
+{
+    unsigned int cnt;
+    FILE *f;
+
+    if(argc < 2)
+    {
+        printf("Error! Please provide a dataset\n");
+        return(0);
+    }
+
+    f = fopen(argv[1], "r");
+    if(!f)
+    {
+        printf("Error! Unable to open file %s\n", argv[1]);
+        return(0);
+    }
+
+
+    for(cnt = 0; cnt < maxcnt; cnt++, out++)
+    {
+        if(1 != fscanf(f, "%d", out))
+        {
+            break;
+        }
+
+        if(*out < 0)
+        {
+            printf("Error! Negative integer detected: %d\n", *out);
+            break;
+        }
+    }
+
+    fclose(f);
+    return(cnt);
+}

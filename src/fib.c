@@ -20,34 +20,23 @@
 
 int main(int argc, char *argv[])
 {
-    FILE *f;
-    size_t dlen;        /* dataset size         */
-    unsigned int n = 0; /* number of months     */
-    unsigned int k = 0; /* litter size          */
-    uint64_t F[41];     /* Fibonacci sequence   */
-    int i;              /* sequence index       */
+    int n;          /* number of months                 */
+    int k;          /* litter size                      */
+    int64_t F[41];  /* Fibonacci sequence               */
+    int i;          /* sequence index                   */
+    int nk[2];      /* number of months and litter size */
 
     /*
      * Read n and k from a file
      */
-    if(argc < 2)
+    if(2 != utils_read_ints_from_file(argc, argv, nk, cnt_of_array(nk)))
     {
-        printf("Error! Please provide a dataset\n");
+        printf("Error! Invalid input\n");
         return(0);
     }
 
-    f = fopen(argv[1], "r");
-    if(!f)
-    {
-        printf("Error! Unable to open file %s\n", argv[1]);
-        return(0);
-    }
-
-    if(2 != fscanf(f, "%u %u", &n, &k))
-    {
-        printf("Error! Unable to read n and k from file %s", argv[1]);
-        return(0);
-    }
+    n = nk[0];
+    k = nk[1];
 
     if(n >= cnt_of_array(F))
     {
