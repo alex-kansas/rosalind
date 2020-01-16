@@ -36,7 +36,7 @@ def test(args, exp_out, exact = True, except_fib = False):
 
     out = subprocess.check_output(args)
     if not verify(out, exp_out, exact):
-        print "FAIL: ", args, out
+        print "FAIL: ", args, out[:64]
 
 
 def _test_with_string(cmd, dataset, exp_out, exact = True, except_fib = False):
@@ -60,8 +60,14 @@ def tofile(fname, s):
 
 def verify(out, exp_out, exact):
     if exact:
+        #if out != exp_out:
+        #    print exp_out
+        #    print out
         return out == exp_out
     else:
+        #if not out.startswith(exp_out):
+        #    print exp_out
+        #    print out
         return out.startswith(exp_out)
 
 
@@ -85,7 +91,7 @@ for cmd in find_cmds():
     test_with_string(cmd, "", "Error! Found 0 DNA strings", except_fib = True)
 
     # Test program with too many DNA strings
-    test_with_string(cmd, "ACGT " * 17, "Error! Too many DNA strings\n", exact = False, except_fib = True)
+    test_with_string(cmd, ">ID\nACGT\n" * 17, "Error! Too many DNA strings\n", exact = False, except_fib = True)
 
     # Test program with a small dataset
     test([cmd, cmd[6:] + "_example.txt"], fromfile(cmd[6:] + "_example_result.txt"))
@@ -125,33 +131,33 @@ for x in [41, 0x7FFFFFFF, 0xFFFFFFFF, -1]:
 test_with_string(
         "bin/gc",
         ">A\n>B\n>C\n>D",
-        "Error! Invalid DNA string: >B\n", exact = False)
+        "Error! Invalid DNA string: A\n", exact = False)
 test_with_string(
         "bin/gc",
         ">A\nAAAA\n>B\nAAAA\n>C\nAAAA\n>D\nAAAG",
-        "D\n25.0000\n")
+        "D\n25.000000\n")
 test_with_string(
         "bin/gc",
         ">A\nAAAA\n>B\nAAAA\n>C\nAACG\n>D\nAAAG",
-        "C\n50.0000\n")
+        "C\n50.000000\n")
 test_with_string(
         "bin/gc",
         ">A\nAAAA\n>B\nACCC\n>C\nAACG\n>D\nAAAG",
-        "B\n75.0000\n")
+        "B\n75.000000\n")
 test_with_string(
         "bin/gc",
         ">A\nAAA\n>B\nCCC\n>C\nGGG\n>D\nTTT",
-        "B\n100.0000\n")
+        "B\n100.000000\n")
 x = random.randint(1,99)
 test_with_string(
         "bin/gc",
         ">NOT_THIS_ONE\n%s\n>THIS_ONE\n%s%s" % ("A"*x, "C"*x, "A"*(100-x)),
-        "THIS_ONE\n%d.0000\n" % x)
+        "THIS_ONE\n%d.000000\n" % x)
 test_with_string(
         "bin/gc",
         ">NOT_THIS_ONE\n%s\n>THIS_ONE\n%s%s" % ("A"*x, "C", "A"*9999),
-        "THIS_ONE\n0.0099\n")
+        "THIS_ONE\n0.010000\n")
 test_with_string(
         "bin/gc",
         ">NOT_THIS_ONE\n%s\n>THIS_ONE\n%s%s" % ("A"*x, "A", "C"*9999),
-        "THIS_ONE\n99.9900\n")
+        "THIS_ONE\n99.990000\n")

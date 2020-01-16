@@ -22,10 +22,10 @@ int main(int argc, char *argv[])
     if(ds.dna_cnt == 1)
     {
         printf("%u %u %u %u\n",
-               ds.dna[0].nt_cnts[NT_A],
-               ds.dna[0].nt_cnts[NT_C],
-               ds.dna[0].nt_cnts[NT_G],
-               ds.dna[0].nt_cnts[NT_T]);
+               ds.dna[0].a_cnt,
+               ds.dna[0].c_cnt,
+               ds.dna[0].g_cnt,
+               ds.dna[0].t_cnt);
     }
     else
     {

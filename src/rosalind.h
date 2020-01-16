@@ -7,16 +7,6 @@
 #define MAX_DNA_CNT         (16)
 #define MAX_DATASET_SIZE    (MAX_DNA_SIZE * MAX_DNA_CNT)
 
-typedef enum
-{
-    NT_A,
-    NT_C,
-    NT_G,
-    NT_T,
-    NT_U,
-    NT_CNT
-} nt_t;
-
 /*
  * The following structure defines a dataset commonly used in the Project Rosalind problems.
  */
@@ -24,8 +14,13 @@ typedef struct
 {
     char *id;                       /* pointer to the NUL-terminated id string  */
     char *dna;                      /* pointer to the NUL-terminated DNA string */
-    size_t dna_len;                 /* DNA sring length (aka total nucleotide)  */
-    unsigned int nt_cnts[NT_CNT];   /* count of each of the nucleotides         */
+                                    /*  may contain white space                 */
+    size_t dna_len;                 /* DNA sring length                         */
+    unsigned int total_nt_cnt;      /* total nucleotide count                   */
+    unsigned int a_cnt;             /* A-count                                  */
+    unsigned int c_cnt;             /* C-count                                  */
+    unsigned int g_cnt;             /* G-count                                  */
+    unsigned int t_cnt;             /* T-count                                  */
 } rosalind_dna_t;
 
 typedef struct

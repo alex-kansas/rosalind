@@ -8,9 +8,9 @@
 #define cnt_of_array(x) sizeof(x)/sizeof(x[0])
 
 /*
- * The following type is used to represent a Q11.20 fractional number
+ * The following type is used to represent a Q1.30 fractional number
  */
-typedef int32_t q20_t;
+typedef int32_t q30_t;
 
 /*
  * The following function checks if the specified character is a nucleotide
@@ -21,19 +21,29 @@ static __inline int isnucleotide(char c)
 }
 
 /*
- * The following function divides two integers and returns a q20_t
+ * The following function divides two integers and returns a q30_t
+ * This works with any fixed point inputs as long as they are in the same format.
  */
-static __inline q20_t q20_int_div_int(int32_t x, int32_t y)
+static __inline q30_t q30_div(int32_t x, int32_t y)
 {
-    return((q20_t)((((int64_t)x) << 20) / y));
+    int64_t temp = (int64_t)x << 30;
+    if((x >= 0) == (y >= 0))
+    {
+        temp += y / 2;
+    }
+    else
+    {
+        temp -= y / 2;
+    }
+    return((q30_t)(temp / y));
 }
 
 /*
- * The following function converts a Q11.20 number to a double
+ * The following function converts a Q1.30 number to a double
  */
-static __inline double q20_to_double(q20_t x)
+static __inline double q30_to_double(q30_t x)
 {
-    return((double)(x) / 1048576.0);
+    return((double)(x) / 1073741824.0);
 }
 
 /*

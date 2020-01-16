@@ -50,18 +50,24 @@ void rosalind_load_dataset(
     size_t pos;                     /* cursor                           */
 
     /*
-     * Load dataset from file
+     * Load dataset from file.
      */
     memset(ds, 0, sizeof(rosalind_dataset_t));
     ds->buf_len = utils_read_file(argc, argv, ds->buf, sizeof(ds->buf));
 
     /*
+     * Make sure the laste character is always NUL.
+     * utils_read_file is supposed to do that, but for robustness purposes, let's just write
+     * a NUL to the last element
+     */
+    ds->buf[sizeof(ds->buf) - 1] = 0;
+
+    /*
      * Scan dataset for DNA strings
      */
-    pos = 0;
+    pos = skip_whitespace(ds->buf, ds->buf_len);
     while((pos < ds->buf_len) && (ds->dna_cnt < cnt_of_array(ds->dna)))
     {
-        pos += skip_whitespace(ds->buf + pos, ds->buf_len - pos);
         pos += parse_rec(ds->buf + pos, ds->buf_len - pos, &ds->dna[ds->dna_cnt]);
 
         /*
@@ -85,7 +91,6 @@ void rosalind_load_dataset(
 
 /*
  * The follwing function scans DNA string, counting it's nucleotides.
- * Skips trailing whitespace.
  * Assumes leading whitespace has already been skipped.
  * Returns number of characters consumed.
  */
@@ -95,76 +100,78 @@ static size_t parse_dna(
         rosalind_dna_t *dna)        /* output DNA info here             */
 {
     size_t pos;                     /* cursor                           */
-    int error;                      /* error indicator                  */
 
     /*
      * Initialize the accumulators
+     *
+     * To demonstrate a fast counting method, we will use an array of 256 integers to accumulate
+     * symbol counts.
+     * With the size of strings that we are using it doesn't really make a difference (might
+     * even make it worse because we have to memset the whole array), but with really large
+     * datasets this could speed things up by avoiding branching.
+     *
+     * If we were concerned with memset taking too long, we could initilalize just whitespace and
+     * nucleotide entries.
      */
-    dna->dna_len = 0;
-    memset(dna->nt_cnts, 0, sizeof(dna->nt_cnts));
+    compiler_assert(sizeof(char) == 1);
+    unsigned int cnt[256];
+    memset(&cnt, 0, sizeof(cnt));
+
+    /*
+     * If ID has not been set, set it to the DNA string itself
+     */
+    dna->dna = buf;
+    if(!dna->id)
+    {
+        dna->id = buf;
+    }
 
     /*
      * Scan the DNA string
+     * '>' identifies the start of id of the next string
      */
-    for(pos = 0, error = 0; (pos < buf_len) && !isspace(buf[pos]) && !error; pos++)
+    for(pos = 0; pos < buf_len; pos++, buf++)
     {
-        switch(buf[pos])
+        char c = *buf;
+        if(c == '>')
         {
-            case 'A':
-                dna->dna_len++;
-                dna->nt_cnts[NT_A]++;
-                break;
-
-            case 'C':
-                dna->dna_len++;
-                dna->nt_cnts[NT_C]++;
-                break;
-
-            case 'G':
-                dna->dna_len++;
-                dna->nt_cnts[NT_G]++;
-                break;
-
-            case 'T':
-                dna->dna_len++;
-                dna->nt_cnts[NT_T]++;
-                break;
-
-            default:
-                printf("Error! Invalid DNA string: %s\n", buf);
-                error = 1;
-                break;
+            break;
         }
+
+        cnt[c]++;
     }
 
+    /*
+     * Update output structure.
+     */
+    dna->dna_len = pos;
+    dna->a_cnt   = cnt['A'];
+    dna->c_cnt   = cnt['C'];
+    dna->g_cnt   = cnt['G'];
+    dna->t_cnt   = cnt['T'];
+    dna->total_nt_cnt = dna->a_cnt + dna->c_cnt + dna->g_cnt + dna->t_cnt;
 
     /*
-     * If an error occurred, clear out the accumulators, and skip to next whitespace character.
+     * Check if counts add up.  If they don't then we encountered some rogue symbols and this
+     * string is not valid.
      */
-    if(error)
+    if(  ((dna->total_nt_cnt + cnt[' '] + cnt['\n']) != dna->dna_len)
+      || (dna->total_nt_cnt == 0))
     {
-        dna->dna_len = 0;
-        memset(dna->nt_cnts, 0, sizeof(dna->nt_cnts));
-        for(; (pos < buf_len) && !isspace(buf[pos]); pos++);
+        printf("Error! Invalid DNA string: %s\n", dna->id);
+        memset(dna, 0, sizeof(rosalind_dna_t));
     }
 
     /*
-     * If we found a valid DNA string, set DNA pointer.
-     * If ID has not been set, set ID to DNA.
+     * Replace trailing whitespace with NUL
+     * We don't want too replace whitespace with NUL white we are scanning the DNA string
+     * in case there is whitespace in the middle of the string.
      */
-    else if(dna->dna_len > 0)
+    while((dna->dna_len > 0) && isspace(*--buf))
     {
-        dna->dna = buf;
-        if(!dna->id)
-        {
-            dna->id = dna->dna;
-        }
+        *buf = 0;
+        dna->dna_len--;
     }
-
-    /*
-     * Skip trailing whitespace
-     */
-    pos += skip_whitespace(buf + pos, buf_len - pos);
 
     return(pos);
 }
@@ -189,7 +196,7 @@ static size_t parse_id(
         if(buf[0] == '>')
         {
             dna->id = &buf[1];
-            for(pos = 1; (pos < buf_len) && (buf[pos] >= '!') && (buf[pos] <= '~'); pos++);
+            for(pos = 1; (pos < buf_len) && !isspace(buf[pos]); pos++);
         }
     }
 
@@ -200,7 +207,6 @@ static size_t parse_id(
 
 /*
  * The following function parses the next record in the dataset.
- * Skips trailing whitespace.
  * Assumes leading whitespace has already been skipped.
  * Returns number of characters consumed
  */

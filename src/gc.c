@@ -21,9 +21,9 @@
 int main(int argc, char *argv[])
 {
     rosalind_dataset_t ds;  /* dataset                                              */
-    q20_t high_gc;          /* highest GC-contet value                              */
+    q30_t high_gc;          /* highest GC-content value                             */
     unsigned int high_idx;  /* index of the DNA string with the highest GC-content  */
-    q20_t gc;               /* current DNA string's GC-content                      */
+    q30_t gc;               /* current DNA string's GC-content                      */
     unsigned int i;         /* index                                                */
 
     /*
@@ -43,9 +43,9 @@ int main(int argc, char *argv[])
     high_idx = 0;
     for(i = 0; i < ds.dna_cnt; i++)
     {
-        gc = q20_int_div_int(
-                ds.dna[i].nt_cnts[NT_G] + ds.dna[i].nt_cnts[NT_C],
-                ds.dna[i].dna_len);
+        gc = q30_div(
+                ds.dna[i].g_cnt + ds.dna[i].c_cnt,
+                ds.dna[i].total_nt_cnt);
         if(gc > high_gc)
         {
             high_gc = gc;
@@ -56,5 +56,5 @@ int main(int argc, char *argv[])
     /*
      * Output results
      */
-    printf("%s\n%.4f\n", ds.dna[high_idx].id, q20_to_double(high_gc) * 100.0);
+    printf("%s\n%.6f\n", ds.dna[high_idx].id, q30_to_double(high_gc) * 100.0);
 }
