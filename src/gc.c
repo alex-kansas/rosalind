@@ -43,9 +43,17 @@ int main(int argc, char *argv[])
     high_idx = 0;
     for(i = 0; i < ds.dna_cnt; i++)
     {
-        gc = q30_div(
-                ds.dna[i].g_cnt + ds.dna[i].c_cnt,
-                ds.dna[i].total_nt_cnt);
+        if(ds.dna[i].dna_len)
+        {
+            gc = q30_div(
+                    ds.dna[i].g_cnt + ds.dna[i].c_cnt,
+                    ds.dna[i].dna_len);
+        }
+        else
+        {
+            gc = 0;
+        }
+
         if(gc > high_gc)
         {
             high_gc = gc;

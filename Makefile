@@ -1,7 +1,7 @@
 DEPS = src/utils.h src/rosalind.h
 OBJS = bin/utils.o bin/rosalind.o
 
-all: bin/dna bin/rna bin/revc bin/fib bin/gc test
+all: bin/dna bin/rna bin/revc bin/fib bin/gc bin/hamm test
 
 test:
 	python2.7 vnv/test.py
@@ -20,6 +20,9 @@ bin/fib: src/fib.c $(OBJS) $(DEPS)
 
 bin/gc: src/gc.c $(OBJS) $(DEPS)
 	cc -o $@ src/gc.c $(OBJS)
+
+bin/hamm: src/hamm.c $(OBJS) $(DEPS)
+	cc -o $@ src/hamm.c $(OBJS)
 
 bin/utils.o: src/utils.c $(DEPS)
 	cc -c src/utils.c -o $@

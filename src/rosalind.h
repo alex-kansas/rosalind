@@ -15,8 +15,7 @@ typedef struct
     char *id;                       /* pointer to the NUL-terminated id string  */
     char *dna;                      /* pointer to the NUL-terminated DNA string */
                                     /*  may contain white space                 */
-    size_t dna_len;                 /* DNA sring length                         */
-    unsigned int total_nt_cnt;      /* total nucleotide count                   */
+    size_t dna_len;                 /* DNA sring length (aka total nucleotide)  */
     unsigned int a_cnt;             /* A-count                                  */
     unsigned int c_cnt;             /* C-count                                  */
     unsigned int g_cnt;             /* G-count                                  */
