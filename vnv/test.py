@@ -37,7 +37,7 @@ def test(args, exp_out, exact = True):
         if exp_out.strip() in ["Error! Too many DNA strings",
                                "Error! Invalid DNA string",
                                "Error! Buffer to small",
-                               "Error! Found 0 DNA strings"]:
+                               "Error! Found 0"]:
             exp_out = "Error! Invalid input\n"
 
     out = subprocess.check_output(args)
@@ -90,7 +90,7 @@ for cmd in find_cmds():
     test_with_string(cmd, "This is not a DNA string", "Error! Invalid DNA string", exact = False)
 
     # Test program with an empty dataset
-    test_with_string(cmd, "", "Error! Found 0 DNA strings", exact = False)
+    test_with_string(cmd, "", "Error! Found 0", exact = False)
 
     # Test program with too many DNA strings
     test_with_string(cmd, ">ID\nACGT\n" * 17, "Error! Too many DNA strings\n", exact = False)
@@ -214,19 +214,11 @@ for i in range(4):
             "bin/iprb",
             " ".join([str(int(i==j)) for j in range(3)]),
             "Error! At least two individuals are required\n")
-test_with_string(
-        "bin/iprb",
-        str(random.randint(2, 999999)) + " 0 0",
-        "1.00000\n")
-test_with_string(
-        "bin/iprb",
-        str(random.randint(2, 999999)) + " 1 0",
-        "1.00000\n")
-test_with_string(
-        "bin/iprb",
-        "0 " + str(random.randint(2, 999999)) + " 0",
-        "0.75000\n")
-test_with_string(
-        "bin/iprb",
-        "0 0 " + str(random.randint(2, 999999)),
-        "0.00000\n")
+test_with_string("bin/iprb", "0 1 1", "0.50000\n")
+test_with_string("bin/iprb", "1 0 1", "1.00000\n")
+test_with_string("bin/iprb", "1 1 0", "1.00000\n")
+test_with_string("bin/iprb", "2 0 0", "1.00000\n")
+test_with_string("bin/iprb", "2 1 0", "1.00000\n")
+test_with_string("bin/iprb", "0 2 0", "0.75000\n")
+test_with_string("bin/iprb", "0 0 2", "0.00000\n")
+test_with_string("bin/iprb", "1000000 1000000 1000000", "0.75000\n")

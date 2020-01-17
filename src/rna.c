@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "rosalind.h"
+#include "utils.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,10 +30,8 @@ int main(int argc, char *argv[])
         size_t pos;
         for(pos = 0; pos < ds.dna[0].dna_len; pos++)
         {
-            if(ds.dna[0].dna[pos] == 'T')
-            {
-                ds.dna[0].dna[pos] = 'U';
-            }
+            compiler_assert(sizeof(char) == sizeof(binary_dna_t));
+            ds.dna[0].dna[pos] = rna2char[ds.dna[0].dna[pos] & BINARY_DNA_MASK];
         }
 
         printf("%s\n", ds.dna[0].dna);

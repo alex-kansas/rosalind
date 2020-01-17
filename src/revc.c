@@ -18,11 +18,9 @@ int main(int argc, char *argv[])
 {
     rosalind_dataset_t ds;  /* dataset                                                  */
     char sc[MAX_DNA_SIZE];  /* reverse complement of the DNA string                     */
-    char map[256];          /* maps complementary symbols to each other;                */
-                            /*  using only 4 of the elements to trade memory for speed  */
     size_t cnt;             /* counter                                                  */
     char * psc;             /* pointer into reverse compliment string                   */
-    char const * pdna;      /* pointer into the DNA string                              */
+    binary_dna_t const * pdna;  /* pointer into the DNA string                          */
 
     /*
      * Read dataset
@@ -40,23 +38,13 @@ int main(int argc, char *argv[])
     }
 
     /*
-     * Initialize map.
-     * This really should be static const, but this way is less typing.
-     */
-    memset(map, ' ', sizeof(map));
-    map['A'] = 'T';
-    map['C'] = 'G';
-    map['G'] = 'C';
-    map['T'] = 'A';
-
-    /*
      * Compute reverse complement of the DNA string
      */
     psc = sc;
     pdna = ds.dna[0].dna + (ds.dna[0].dna_len - 1);
     for(cnt = ds.dna[0].dna_len; cnt; cnt--)
     {
-        *psc++ = map[*pdna--];
+        *psc++ = com2char[*pdna-- & BINARY_DNA_MASK];
     }
 
     /*

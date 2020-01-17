@@ -102,22 +102,15 @@ static size_t parse_dna(
         char term)                  /* terminator                       */
 {
     size_t pos;                     /* input buffer cursor              */
-    char * dna;                     /* output buffer cursor             */
+    binary_dna_t * dna;             /* output buffer cursor             */
+
+    dnainfo->dna = (binary_dna_t *)buf;
 
     /*
-     * If ID has not been set, set it to the DNA string itself
+     * Scan the DNA string looking for the terminator, counting symbols, eliminating
+     * whitespace, and converting from character to binary representation.
      */
-    dnainfo->dna = buf;
-    if(!dnainfo->id)
-    {
-        dnainfo->id = buf;
-    }
-
-    /*
-     * Scan the DNA string looking for the terminator, counting symbols, and eliminating
-     * whitespace.
-     */
-    for(pos = 0, dna = buf; pos < buf_len; pos++, buf++)
+    for(pos = 0, dna = (binary_dna_t *)buf; pos < buf_len; pos++, buf++)
     {
         char c = *buf;
 
@@ -131,25 +124,30 @@ static size_t parse_dna(
             continue;
         }
 
-        *dna++ = c;
         dnainfo->dna_len++;
 
         switch(c)
         {
             case 'A':
                 dnainfo->a_cnt++;
+                *dna++ = A;
                 break;
 
             case 'C':
                 dnainfo->c_cnt++;
+                *dna++ = C;
                 break;
 
             case 'G':
                 dnainfo->g_cnt++;
+                *dna++ = G;
                 break;
 
             case 'T':
+            case 'U':
+                { compiler_assert(T == U); }
                 dnainfo->t_cnt++;
+                *dna++ = T;
                 break;
 
             default:
@@ -165,10 +163,8 @@ static size_t parse_dna(
     /*
      * Clear symbols that have been moved and trailing whitespace.
      */
-    while(dna != buf)
-    {
-        *dna++ = 0;
-    }
+    { compiler_assert(sizeof(char) == 1); }
+    memset(dna, 0, buf - (char *)dna);
 
     pos += skip_whitespace(buf, buf_len - pos);
 

@@ -2,10 +2,24 @@
 #define ROSALIND_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 #define MAX_DNA_SIZE        (1024)
 #define MAX_DNA_CNT         (16)
 #define MAX_DATASET_SIZE    (MAX_DNA_SIZE * MAX_DNA_CNT)
+
+/*
+ * There are four different nucleotides: T, C, A, and G.  In RNA T is replaced with U.
+ * These can be represented with a 2-bit number.
+ * Assigned numeric values are not arbitrary -- these particular values allow complements be be
+ * computed by xor'ing with 2.
+ */
+typedef uint8_t binary_dna_t;
+enum { U=0, C=1, A=2, G=3, T = U, BINARY_DNA_MASK = 0x03 };
+
+static char const * const rna2char = "UCAG";
+static char const * const dna2char = "TCAG";
+static char const * const com2char = "AGTC";
 
 /*
  * The following structure defines a dataset commonly used in the Project Rosalind problems.
@@ -13,8 +27,8 @@
 typedef struct
 {
     char *id;                       /* pointer to the NUL-terminated id string  */
-    char *dna;                      /* pointer to the NUL-terminated DNA string */
-                                    /*  may contain white space                 */
+    binary_dna_t *dna;              /* pointer to an array of 2-bit numbers each*/
+                                    /*  representing a single nucleotide        */
     size_t dna_len;                 /* DNA sring length (aka total nucleotide)  */
     unsigned int a_cnt;             /* A-count                                  */
     unsigned int c_cnt;             /* C-count                                  */
