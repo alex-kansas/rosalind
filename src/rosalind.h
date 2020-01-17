@@ -52,4 +52,15 @@ void rosalind_load_dataset(
         char *argv[],               /* command line arguments           */
         rosalind_dataset_t *ds);    /* output dataset here              */
 
+/*
+ * Function   : rosalind_search_naive
+ * Description: Finds all occurrences of DNA string needle in DNA string haystack using the naive
+ *              string-matching algorithm
+ */
+size_t rosalind_search_naive(
+        rosalind_dna_t const * haystack,
+        rosalind_dna_t const * needle,
+        size_t * occurrences,
+        size_t max_occurences);
+
 #endif /* ROSALIND_H */

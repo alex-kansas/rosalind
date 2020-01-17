@@ -1,7 +1,7 @@
 DEPS = src/utils.h src/rosalind.h
 OBJS = bin/utils.o bin/rosalind.o
 
-all: bin/dna bin/rna bin/revc bin/fib bin/gc bin/hamm bin/iprb bin/prot test
+all: bin/dna bin/rna bin/revc bin/fib bin/gc bin/hamm bin/iprb bin/prot bin/subs test
 
 test:
 	python2.7 vnv/test.py
@@ -29,6 +29,9 @@ bin/iprb: src/iprb.c $(OBJS) $(DEPS)
 
 bin/prot: src/prot.c $(OBJS) $(DEPS)
 	cc -o $@ src/prot.c $(OBJS)
+
+bin/subs: src/subs.c $(OBJS) $(DEPS)
+	cc -o $@ src/subs.c $(OBJS)
 
 bin/utils.o: src/utils.c $(DEPS)
 	cc -c src/utils.c -o $@

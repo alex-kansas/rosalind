@@ -16,11 +16,10 @@
 
 int main(int argc, char *argv[])
 {
-    rosalind_dataset_t ds;  /* dataset                                                  */
-    char sc[MAX_DNA_SIZE];  /* reverse complement of the DNA string                     */
-    size_t cnt;             /* counter                                                  */
-    char * psc;             /* pointer into reverse compliment string                   */
-    binary_dna_t const * pdna;  /* pointer into the DNA string                          */
+    rosalind_dataset_t ds;  /* dataset                      */
+    size_t cnt;             /* counter                      */
+    binary_dna_t * head;    /* pointer into the DNA string  */
+    binary_dna_t * tail;    /* pointer into the DNA string  */
 
     /*
      * Read dataset
@@ -31,31 +30,27 @@ int main(int argc, char *argv[])
         printf("Error! Found %d DNA strings", ds.dna_cnt);
         return(0);
     }
-    else if(ds.dna[0].dna_len >= cnt_of_array(sc))
-    {
-        printf("Error! DNA string is too long (%zu)", ds.dna[0].dna_len);
-        return(0);
-    }
 
     /*
-     * Compute reverse complement of the DNA string
+     * Compute reverse complement of the DNA string in place
      */
-    psc = sc;
-    pdna = ds.dna[0].dna + (ds.dna[0].dna_len - 1);
-    for(cnt = ds.dna[0].dna_len; cnt; cnt--)
+    head = ds.dna[0].dna;
+    tail = ds.dna[0].dna + (ds.dna[0].dna_len - 1);
+    cnt  = ds.dna[0].dna_len / 2;
+    while(cnt--)
     {
-        *psc++ = com2char[*pdna-- & BINARY_DNA_MASK];
+        char c  = com2char[*head & BINARY_DNA_MASK];
+        *head++ = com2char[*tail & BINARY_DNA_MASK];
+        *tail-- = c;
     }
 
-    /*
-     * Add NUL terminator becase we didn't memset the whole.
-     * Note that we already checked to make sure that NUL will fit in the buffer.
-     */
-    *psc = 0;
-
+    if(ds.dna[0].dna_len & 1)
+    {
+        *head = com2char[*head];
+    }
     /*
      * Output result
      */
-    printf("%s", sc);
+    printf("%s\n", ds.dna[0].dna);
     return(0);
 }

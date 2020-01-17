@@ -76,6 +76,10 @@ void rosalind_load_dataset(
          */
         if(ds->dna[ds->dna_cnt].dna)
         {
+            if(!ds->dna[ds->dna_cnt].id)
+            {
+                ds->dna[ds->dna_cnt].id = "unnamed string";
+            }
             ds->dna_cnt += 1;
         }
     }
@@ -87,6 +91,49 @@ void rosalind_load_dataset(
     {
         printf("Error! Too many DNA strings\n");
     }
+}
+
+/*
+ * Function   : rosalind_search_naive
+ * Description: Finds all occurrences of DNA string needle in DNA string haystack using the naive
+ *              string-matching algorithm
+ */
+size_t rosalind_search_naive(
+        rosalind_dna_t const * haystack,
+        rosalind_dna_t const * needle,
+        size_t * occurrences,
+        size_t max_occurences)
+{
+    size_t i = 0;
+    size_t j = 0;
+    size_t cnt_occurrences = 0;
+
+    if(haystack->dna_len < needle->dna_len)
+    {
+        return(0);
+    }
+
+    for(i = 0; i < (haystack->dna_len - needle->dna_len); i++)
+    {
+        for(j = 0; j < needle->dna_len; j++)
+        {
+            if(haystack->dna[i + j] != needle->dna[j])
+            {
+                break;
+            }
+        }
+
+        if(j == needle->dna_len)
+        {
+            occurrences[cnt_occurrences++] = i;
+            if(cnt_occurrences >= max_occurences)
+            {
+                return(cnt_occurrences);
+            }
+        }
+    }
+
+    return(cnt_occurrences);
 }
 
 
